@@ -61,8 +61,8 @@ const Navbar = ({ minimal = false }) => {
 
                 {/* Auth Buttons Container */}
                 <div className="hidden md:flex items-center space-x-4">
-                    <button className="text-sm font-medium text-slate-200 hover:text-white transition-colors cursor-pointer">Login</button>
-                    <button className="px-5 py-2 rounded-full border border-white/20 text-sm font-medium hover:bg-white/10 transition-colors cursor-pointer">Sign up</button>
+                    <Link to="/login" className="text-sm font-medium text-slate-200 hover:text-white transition-colors cursor-pointer">Login</Link>
+                    <Link to="/register" className="px-5 py-2 rounded-full border border-white/20 text-sm font-medium hover:bg-white/10 transition-colors cursor-pointer">Sign up</Link>
                     <div className="flex items-center gap-1 cursor-pointer text-sm font-medium ml-2 border-l border-white/20 pl-4">
                         EN <ChevronDown className="w-4 h-4" />
                     </div>
