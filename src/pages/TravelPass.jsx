@@ -3,7 +3,6 @@ import Navbar from '../components/Navbar';
 import BackgroundBlobs from '../components/BackgroundBlobs';
 import { ArrowLeft, Fingerprint, Globe, Smartphone, Car, Check, ShieldCheck, Users, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { saveToVault } from '../utils/crypto';
 
 const TravelPass = () => {
     const [step, setStep] = useState(1);
@@ -14,6 +13,7 @@ const TravelPass = () => {
     const [isTravelingByCar, setIsTravelingByCar] = useState(false);
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [errors, setErrors] = useState({ details: false, otp: false, vehicle: false });
+    const [passId, setPassId] = useState(null);
     const navigate = useNavigate();
 
     const handleNationalitySelect = (type) => {
@@ -92,7 +92,7 @@ const TravelPass = () => {
         setStep(4); // Vehicle step
     };
 
-    const proceedToProcessing = () => {
+    const proceedToProcessing = async () => {
         if (isTravelingByCar) {
             const vNum = travelVehicle.trim();
             if (vNum.length < 4) {
@@ -105,27 +105,48 @@ const TravelPass = () => {
         }
 
         const cleanedIds = travelerIds.map(id => userType === 'indian' ? id.trim().replace(/\s/g, '') : id.trim());
-        saveToVault(cleanedIds, travelVehicle);
 
-        setStep(5); // Processing
-        setTimeout(() => {
-            setStep(6); // Success
-        }, 2500);
+        try {
+            setStep(5); // Processing
+            const userStr = localStorage.getItem('user');
+            if (!userStr) {
+                alert("Please log in first.");
+                navigate('/login');
+                return;
+            }
+            const userData = JSON.parse(userStr);
+
+            const res = await fetch('http://localhost:5000/api/pass/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: userData._id,
+                    passType: userType,
+                    uids: cleanedIds,
+                    vehicle: isTravelingByCar ? travelVehicle.trim() : ''
+                })
+            });
+
+            if (!res.ok) throw new Error("Failed to generate pass");
+            const data = await res.json();
+
+            // Artificial delay for UI effect
+            setTimeout(() => {
+                setPassId(data._id);
+                setStep(6); // Success
+            }, 1000);
+
+        } catch (error) {
+            console.error(error);
+            alert("Error generating pass securely. Please try again.");
+            setStep(4);
+        }
     };
 
     // Generate QR URL based on final state
     let verifyUrl = '';
-    if (step === 6) {
-        const cleanedIds = travelerIds.map(id => {
-            let val = id.trim();
-            if (userType === 'indian') val = val.replace(/\s/g, '');
-            return val;
-        });
-        const maskedIds = cleanedIds.map(id => id.slice(-4)).join(',');
-        verifyUrl = `${window.location.origin}/verify?type=${userType}&uids=${maskedIds}`;
-        if (travelVehicle) {
-            verifyUrl += `&vehicle=${encodeURIComponent(travelVehicle)}`;
-        }
+    if (step === 6 && passId) {
+        verifyUrl = `${window.location.origin}/verify?id=${passId}`;
     }
 
     const qrColor = userType === 'foreign' ? '3b82f6' : '059669';
