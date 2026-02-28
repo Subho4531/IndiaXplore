@@ -23,9 +23,9 @@ mongoose.connect(process.env.MONGODB_URL)
     .then(() => {
         console.log('Connected to MongoDB');
         // Vercel expects an exported app, not a running server
-        if (process.env.NODE_ENV !== 'production') {
-            app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-        }
+
+        app.listen(5000, () => console.log(`Server running on port 5000`));
+
     })
     .catch((error) => console.error('MongoDB connection error:', error));
 
