@@ -1,37 +1,35 @@
-> [debug] [2026-02-28T13:51:35.868Z] Found config in file "C:\Users\subho\Downloads\IndiaXplore\IndiaXplore\vercel.json"
-Vercel CLI 50.23.2
-> [debug] [2026-02-28T13:51:35.872Z] Agent/TTY/nonInteractive: isAgent=false agentName=none stdin.isTTY=true --non-interactive=false explicitFalse=false => nonInteractive=false
-> [debug] [2026-02-28T13:51:35.872Z] user supplied known subcommand: "build"
+> [debug] [2026-02-28T14:00:05.637Z] Found config in file "C:\Users\subho\Downloads\IndiaXplore\IndiaXplore\vercel.json"
+> [debug] [2026-02-28T14:00:05.638Z] Vercel CLI 50.25.4
+> [debug] [2026-02-28T14:00:05.640Z] Agent/TTY/nonInteractive: isAgent=false agentName=none stdin.isTTY=true --non-interactive=false explicitFalse=false => nonInteractive=false
+> [debug] [2026-02-28T14:00:05.640Z] user supplied known subcommand: "build"
 WARN! Build not running on Vercel. System environment variables will not be available.
-> [debug] [2026-02-28T13:51:35.986Z] Loaded environment variables from "C:\Users\subho\Downloads\IndiaXplore\IndiaXplore\.vercel\.env.preview.local"
-> [debug] [2026-02-28T13:51:36.023Z] Locating files C:\Users\subho\Downloads\IndiaXplore\IndiaXplore\server
-> [debug] [2026-02-28T13:51:36.027Z] Locating files C:\Users\subho\Downloads\IndiaXplore\IndiaXplore\server [4ms]
-> [debug] [2026-02-28T13:51:36.352Z] Imported Builder "@vercel/express" from "C:\Users\subho\AppData\Roaming\npm\node_modules\vercel\node_modules\@vercel\express"
-> [debug] [2026-02-28T13:51:36.352Z] Resolved builders: "@vercel/static => undefined, @vercel/express => 0.1.49"
-> [debug] [2026-02-28T13:51:36.355Z] Setting env VERCEL_PROJECT_SETTINGS_NODE_VERSION to "24.x"
-> [debug] [2026-02-28T13:51:36.355Z] Building entrypoint "index.js" with "@vercel/express"
+> [debug] [2026-02-28T14:00:05.735Z] Loaded environment variables from "C:\Users\subho\Downloads\IndiaXplore\IndiaXplore\.vercel\.env.preview.local"
+> [debug] [2026-02-28T14:00:05.761Z] Locating files C:\Users\subho\Downloads\IndiaXplore\IndiaXplore\server
+> [debug] [2026-02-28T14:00:05.764Z] Locating files C:\Users\subho\Downloads\IndiaXplore\IndiaXplore\server [2ms]
+> [debug] [2026-02-28T14:00:06.087Z] Imported Builder "@vercel/express" from "C:\Users\subho\AppData\Roaming\npm\node_modules\vercel\node_modules\@vercel\express"
+> [debug] [2026-02-28T14:00:06.087Z] Resolved builders: "@vercel/static => undefined, @vercel/express => 0.1.51"
+> [debug] [2026-02-28T14:00:06.090Z] Setting env VERCEL_PROJECT_SETTINGS_NODE_VERSION to "24.x"
+> [debug] [2026-02-28T14:00:06.090Z] Building entrypoint "index.js" with "@vercel/express"
 Installing dependencies...
 
-up to date in 555ms
+up to date in 636ms
 
 51 packages are looking for funding
   run `npm fund` for details
 Error: Cannot read properties of undefined (reading 'fsPath')
-> [debug] [2026-02-28T13:51:37.587Z] Vercel CLI 50.23.2
-
-> [debug] [2026-02-28T13:51:38.475Z] Telemetry event tracked
-> [debug] [2026-02-28T13:51:38.543Z] Telemetry subprocess exited with code 0
-> [debug] [2026-02-28T13:51:38.544Z] Spawning C:\Users\subho\AppData\Roaming\npm\node_modules\vercel\dist\get-latest-worker.cjs
-> '[debug] [2026-02-28T13:51:38.594Z] Notifying parent we're ready
-> '[debug] [2026-02-28T13:51:38.597Z] Received message from parent: {
+> [debug] [2026-02-28T14:00:08.411Z] Telemetry event tracked
+> [debug] [2026-02-28T14:00:08.485Z] Telemetry subprocess exited with code 0
+> [debug] [2026-02-28T14:00:08.486Z] Spawning C:\Users\subho\AppData\Roaming\npm\node_modules\vercel\dist\get-latest-worker.cjs
+> '[debug] [2026-02-28T14:00:08.536Z] Notifying parent we're ready
+> '[debug] [2026-02-28T14:00:08.539Z] Received message from parent: {
   cacheFile: 'C:\\Users\\subho\\AppData\\Local\\com.vercel.cli\\Cache\\package-updates\\vercel-latest.json',
   distTag: 'latest',
   name: 'vercel',
   updateCheckInterval: 86400000
 }
-> '[debug] [2026-02-28T13:51:38.597Z] Disconnecting from parent
-> '[debug] [2026-02-28T13:51:38.598Z] Checking lock file: C:\Users\subho\AppData\Local\com.vercel.cli\Cache\package-updates\vercel-latest.lock
-> '[debug] [2026-02-28T13:51:38.599Z] Found lock file with pid: 17388
-> '[debug] [2026-02-28T13:51:38.599Z] Resetting lock file: Error: kill ESRCH
-> '[debug] [2026-02-28T13:51:38.600Z] Initializing lock file with pid 27220
-> '[debug] [2026-02-28T13:51:38.601Z] Fetching https://registry.npmjs.org/-/package/vercel/dist-tags
+> '[debug] [2026-02-28T14:00:08.539Z] Disconnecting from parent
+> '[debug] [2026-02-28T14:00:08.541Z] Checking lock file: C:\Users\subho\AppData\Local\com.vercel.cli\Cache\package-updates\vercel-latest.lock
+> '[debug] [2026-02-28T14:00:08.542Z] Found lock file with pid: 24636
+> '[debug] [2026-02-28T14:00:08.542Z] Resetting lock file: Error: kill ESRCH
+> '[debug] [2026-02-28T14:00:08.543Z] Initializing lock file with pid 26772
+> '[debug] [2026-02-28T14:00:08.543Z] Fetching https://registry.npmjs.org/-/package/vercel/dist-tags
