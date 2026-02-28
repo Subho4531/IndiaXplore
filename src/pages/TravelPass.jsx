@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import BackgroundBlobs from '../components/BackgroundBlobs';
-import { ArrowLeft, Fingerprint, Globe, Smartphone, Car, Check, ShieldCheck, Users, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Fingerprint, Globe, Smartphone, Car, Check, ShieldCheck, Users, CheckCircle2, UserCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const TravelPass = () => {
@@ -14,7 +14,30 @@ const TravelPass = () => {
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [errors, setErrors] = useState({ details: false, otp: false, vehicle: false });
     const [passId, setPassId] = useState(null);
+    const [familyMembers, setFamilyMembers] = useState([]);
+    const [selectedMembers, setSelectedMembers] = useState([]); // Array of member indices or IDs
     const navigate = useNavigate();
+
+    // Fetch Profile on mount
+    React.useEffect(() => {
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        if (!storedUser) {
+            alert("Please login to create a Digital Travel Pass");
+            navigate('/login');
+            return;
+        }
+
+        const fetchFamily = async () => {
+            try {
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/profile/${storedUser._id}`);
+                const data = await res.json();
+                setFamilyMembers(data.familyMembers || []);
+            } catch (err) {
+                console.error("Error fetching family:", err);
+            }
+        };
+        fetchFamily();
+    }, [navigate]);
 
     const handleNationalitySelect = (type) => {
         setUserType(type);
@@ -104,7 +127,11 @@ const TravelPass = () => {
             setTravelVehicle('');
         }
 
-        const cleanedIds = travelerIds.map(id => userType === 'indian' ? id.trim().replace(/\s/g, '') : id.trim());
+        // Combine family member names and manual IDs
+        const selectedFamilyDetails = selectedMembers.map(idx => familyMembers[idx].name);
+        const manualIds = travelerIds.filter(id => id.trim()).map(id => userType === 'indian' ? id.trim().replace(/\s/g, '') : id.trim());
+
+        const allUIDs = [...selectedFamilyDetails, ...manualIds];
 
         try {
             setStep(5); // Processing
@@ -122,7 +149,7 @@ const TravelPass = () => {
                 body: JSON.stringify({
                     userId: userData._id,
                     passType: userType,
-                    uids: cleanedIds,
+                    uids: allUIDs, // Passing names or IDs
                     vehicle: isTravelingByCar ? travelVehicle.trim() : ''
                 })
             });
@@ -223,21 +250,61 @@ const TravelPass = () => {
                         <div className="glass-panel rounded-[32px] p-8 border border-white/10 relative overflow-hidden shadow-2xl">
                             <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl pointer-events-none ${userType === 'indian' ? 'bg-emerald-500/10' : 'bg-blue-500/10'}`}></div>
 
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 bg-slate-900/40 p-4 rounded-2xl border border-white/5">
+                            {/* Family Selection */}
+                            <div className="mb-10">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h3 className="font-bold text-white text-lg">Select Travelers from Family</h3>
+                                    <button
+                                        onClick={() => navigate('/profile')}
+                                        className="text-xs text-blue-400 hover:text-blue-300 transition-colors font-bold underline"
+                                    >
+                                        Edit Family Profile
+                                    </button>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    {familyMembers.length === 0 ? (
+                                        <div className="col-span-full py-4 text-center text-slate-500 text-sm italic">
+                                            No family members found. You can still add IDs manually below.
+                                        </div>
+                                    ) : familyMembers.map((member, idx) => (
+                                        <div
+                                            key={member._id}
+                                            onClick={() => {
+                                                const newSelected = selectedMembers.includes(idx)
+                                                    ? selectedMembers.filter(i => i !== idx)
+                                                    : [...selectedMembers, idx];
+                                                setSelectedMembers(newSelected);
+                                            }}
+                                            className={`p-4 rounded-xl border transition-all cursor-pointer flex items-center gap-3 ${selectedMembers.includes(idx) ? 'border-emerald-500/50 bg-emerald-500/10' : 'border-white/5 bg-slate-800/50 hover:border-white/10'}`}
+                                        >
+                                            <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center overflow-hidden">
+                                                {member.profilePic ? <img src={member.profilePic} className="w-full h-full object-cover" alt="" /> : <UserCircle className="w-6 h-6 text-slate-500" />}
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-sm font-bold text-white leading-tight">{member.name}</p>
+                                                <p className="text-[10px] text-slate-500">{member.relation} • {member.age} yrs</p>
+                                            </div>
+                                            {selectedMembers.includes(idx) && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 bg-slate-900/40 p-4 rounded-2xl border border-white/5">
                                 <div>
-                                    <h3 className="font-bold text-white mb-1">Number of Travelers</h3>
-                                    <p className="text-xs text-slate-400">Generate a single pass for your whole group.</p>
+                                    <h3 className="font-bold text-white mb-1">Additional Travelers</h3>
+                                    <p className="text-xs text-slate-400">Add members not in your profile.</p>
                                 </div>
                                 <select value={memberCount} onChange={handleMemberCountChange} className="bg-slate-800 border border-slate-600 text-white rounded-xl px-4 py-2 focus:outline-none focus:border-emerald-500 cursor-pointer min-w-[100px]">
-                                    {[1, 2, 3, 4, 5].map(num => <option key={num} value={num}>{num} Member{num > 1 ? 's' : ''}</option>)}
+                                    {[0, 1, 2, 3, 4, 5].map(num => <option key={num} value={num}>{num} Manual Entry</option>)}
                                 </select>
                             </div>
 
                             <div className="space-y-6 mb-8">
-                                {travelerIds.map((val, idx) => (
+                                {travelerIds.map((val, idx) => memberCount > 0 && (
                                     <div className="relative" key={idx}>
                                         <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-                                            {memberCount === 1 ? 'Traveler' : `Traveler ${idx + 1}`} - {userType === 'indian' ? '12-Digit Aadhar' : 'Passport Number'}
+                                            {`Additional Traveler ${idx + 1}`} - {userType === 'indian' ? '12-Digit Aadhar' : 'Passport Number'}
                                         </label>
                                         <div className="relative">
                                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -256,10 +323,19 @@ const TravelPass = () => {
                                 ))}
                             </div>
 
-                            {errors.details && <p className="text-red-400 text-sm mt-2 mb-4 font-medium text-center">Please ensure all fields are filled correctly.</p>}
+                            {(selectedMembers.length === 0 && (memberCount === 0 || travelerIds.every(id => !id.trim()))) && <p className="text-emerald-400/70 text-xs italic mb-4 text-center">At least one traveler must be selected or entered.</p>}
 
-                            <button onClick={validateDetailsAndProceed} className={`w-full text-white font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all flex items-center justify-center gap-2 ${userType === 'indian' ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-blue-600 hover:bg-blue-500 shadow-[0_0_20px_rgba(37,99,235,0.3)]'}`}>
-                                Verify & Generate OTP
+                            <button
+                                onClick={() => {
+                                    if (selectedMembers.length === 0 && travelerIds.every(id => !id.trim())) {
+                                        setErrors({ ...errors, details: true });
+                                        return;
+                                    }
+                                    validateDetailsAndProceed();
+                                }}
+                                className={`w-full text-white font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all flex items-center justify-center gap-2 ${userType === 'indian' ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-blue-600 hover:bg-blue-500 shadow-[0_0_20px_rgba(37,99,235,0.3)]'}`}
+                            >
+                                Verify & Proceed to OTP
                             </button>
                         </div>
                     </div>

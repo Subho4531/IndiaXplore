@@ -12,6 +12,8 @@ const passSchema = new mongoose.Schema({
     passType: { type: String, enum: ['indian', 'foreign'], required: true },
     uids: [{ type: String, required: true }], // Masked or hashed identifiers
     vehicle: { type: String, default: '' }, // Optional vehicle number
+    qrCode: { type: String }, // Store the generated QR or its unique reference
+    validUntil: { type: Date }, // Set by verifier during scan
     checkpoints: [checkpointSchema] // History of verifier scans
 }, { timestamps: true });
 

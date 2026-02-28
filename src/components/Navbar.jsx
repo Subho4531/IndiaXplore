@@ -4,6 +4,13 @@ import { Link } from 'react-router-dom';
 
 const Navbar = ({ minimal = false }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    const handleLogout = () => {
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        window.location.href = '/';
+    };
 
     if (minimal) {
         return (
@@ -61,8 +68,21 @@ const Navbar = ({ minimal = false }) => {
 
                 {/* Auth Buttons Container */}
                 <div className="hidden md:flex items-center space-x-4">
-                    <Link to="/login" className="text-sm font-medium text-slate-200 hover:text-white transition-colors cursor-pointer">Login</Link>
-                    <Link to="/register" className="px-5 py-2 rounded-full border border-white/20 text-sm font-medium hover:bg-white/10 transition-colors cursor-pointer">Sign up</Link>
+                    {user ? (
+                        <>
+                            <Link to="/profile" className="text-sm font-medium text-slate-200 hover:text-white transition-colors cursor-pointer bg-white/5 px-4 py-2 rounded-full border border-white/10">
+                                My Profile
+                            </Link>
+                            <button onClick={handleLogout} className="text-sm font-medium text-red-400 hover:text-red-300 transition-colors cursor-pointer">
+                                Logout
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <Link to="/login" className="text-sm font-medium text-slate-200 hover:text-white transition-colors cursor-pointer">Login</Link>
+                            <Link to="/register" className="px-5 py-2 rounded-full border border-white/20 text-sm font-medium hover:bg-white/10 transition-colors cursor-pointer">Sign up</Link>
+                        </>
+                    )}
                     <div className="flex items-center gap-1 cursor-pointer text-sm font-medium ml-2 border-l border-white/20 pl-4">
                         EN <ChevronDown className="w-4 h-4" />
                     </div>

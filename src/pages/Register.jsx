@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Shield, User, Mail, Lock, Fingerprint, LogIn } from 'lucide-react';
+import { Shield, User, Mail, Lock, Fingerprint, LogIn, Phone } from 'lucide-react';
 
 const Register = () => {
     const [role, setRole] = useState('traveller');
@@ -8,7 +8,8 @@ const Register = () => {
         name: '',
         email: '',
         password: '',
-        aadharNumber: ''
+        aadharNumber: '',
+        mobileNumber: ''
     });
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -126,6 +127,20 @@ const Register = () => {
                                 className="w-full pl-10 pr-3 py-3 border border-slate-700 rounded-xl bg-slate-900/50 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                 placeholder="Password"
                                 value={formData.password}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Phone className="h-5 w-5 text-slate-400" />
+                            </div>
+                            <input
+                                name="mobileNumber"
+                                type="tel"
+                                required
+                                className="w-full pl-10 pr-3 py-3 border border-slate-700 rounded-xl bg-slate-900/50 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                placeholder="Mobile Number"
+                                value={formData.mobileNumber}
                                 onChange={handleChange}
                             />
                         </div>

@@ -14,7 +14,7 @@ export const generateToken = (id) => {
 router.post('/register', async (req, res) => {
     try {
         console.log("Register Request Body:", req.body);
-        const { name, email, password, role, aadharNumber } = req.body;
+        const { name, email, password, role, aadharNumber, mobileNumber } = req.body;
 
         const userExists = await User.findOne({ email });
         if (userExists) {
@@ -33,6 +33,7 @@ router.post('/register', async (req, res) => {
             email,
             password: hashedPassword,
             role,
+            mobileNumber,
             aadharHash,
         });
 

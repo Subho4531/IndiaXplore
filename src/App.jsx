@@ -26,6 +26,7 @@ import Odisha from './pages/Odisha';
 import Telengana from './pages/Telengana';
 import Tn from './pages/Tn';
 import Wb from './pages/Wb';
+import Profile from './pages/Profile';
 
 function App() {
     return (
@@ -59,6 +60,7 @@ function App() {
                 <Route path="/rail" element={<Rail />} />
                 <Route path="/hotels" element={<Hotels />} />
                 <Route path="/hospital" element={<Hospital />} />
+                <Route path="/profile" element={<Profile />} />
             </Routes>
         </Router>
     );

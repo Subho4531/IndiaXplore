@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import authRoutes from '../server/routes/auth.js';
 import passRoutes from '../server/routes/pass.js';
+import profileRoutes from '../server/routes/profile.js';
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ app.get('/api', (req, res) => {
 // Main Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/pass', passRoutes);
+app.use('/api/profile', profileRoutes);
 
 // Fallback for debugging
 app.use((req, res) => {

@@ -15,7 +15,7 @@ const router = express.Router();
 // POST /api/pass/generate
 router.post('/generate', async (req, res) => {
     try {
-        const { userId, passType, uids, vehicle } = req.body;
+        const { userId, passType, uids, vehicle, qrCode } = req.body;
 
         const user = await User.findById(userId);
         if (!user || user.role !== 'traveller') {
@@ -26,7 +26,8 @@ router.post('/generate', async (req, res) => {
             user: userId,
             passType,
             uids,
-            vehicle
+            vehicle,
+            qrCode
         });
 
         res.status(201).json(newPass);
@@ -57,14 +58,14 @@ router.get('/:id', async (req, res) => {
 // POST /api/pass/:id/verify
 router.post('/:id/verify', async (req, res) => {
     try {
-        const { verifierId, location, notes } = req.body;
+        const { verifierId, location, notes, validityDuration } = req.body;
 
         const verifier = await User.findById(verifierId);
         if (!verifier || verifier.role !== 'verifier') {
             return res.status(403).json({ message: 'Only verifiers can append checkpoints' });
         }
 
-        const pass = await Pass.findById(req.params.id);
+        const pass = await Pass.findById(req.params.id).populate('user');
         if (!pass) {
             return res.status(404).json({ message: 'Pass not found' });
         }
@@ -74,6 +75,13 @@ router.post('/:id/verify', async (req, res) => {
             location,
             notes
         });
+
+        // Set validity if duration is provided (in hours)
+        if (validityDuration) {
+            const validUntil = new Date();
+            validUntil.setHours(validUntil.getHours() + parseInt(validityDuration));
+            pass.validUntil = validUntil;
+        }
 
         await pass.save();
 

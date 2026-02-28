@@ -5,8 +5,16 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, enum: ['traveller', 'verifier'], required: true },
+    mobileNumber: { type: String, required: true },
     aadharHash: { type: String, required: true },
-    isVerified: { type: Boolean, default: false }
+    isVerified: { type: Boolean, default: false },
+    familyMembers: [{
+        name: { type: String, required: true },
+        age: { type: Number, required: true },
+        relation: { type: String, required: true },
+        profilePic: { type: String, default: '' },
+        aadharHash: { type: String, default: '' }
+    }]
 }, { timestamps: true });
 
 export default mongoose.model('User', userSchema);

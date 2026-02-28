@@ -20,6 +20,7 @@ const Verify = () => {
     const [passData, setPassData] = useState(null);
     const [checkpointLocation, setCheckpointLocation] = useState('');
     const [checkpointNotes, setCheckpointNotes] = useState('');
+    const [validityDuration, setValidityDuration] = useState('24'); // Default 24 hours
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Check local auth to see if the scanner is a "verifier"
@@ -61,7 +62,8 @@ const Verify = () => {
                 body: JSON.stringify({
                     verifierId: localUser._id,
                     location: checkpointLocation.trim(),
-                    notes: checkpointNotes.trim()
+                    notes: checkpointNotes.trim(),
+                    validityDuration: validityDuration
                 })
             });
 
@@ -132,6 +134,15 @@ const Verify = () => {
                                     <span className="block text-[10px] text-slate-500 uppercase font-bold mb-1">Pass Created</span>
                                     <span className="text-slate-300 font-mono text-xs">{new Date(passData.createdAt).toLocaleDateString('en-IN')}</span>
                                 </div>
+                                {passData.validUntil && (
+                                    <div className="bg-slate-900 rounded-xl p-3 border border-blue-500/50 col-span-2">
+                                        <span className="block text-[10px] text-slate-500 uppercase font-bold mb-1">Expires On</span>
+                                        <span className="text-blue-400 font-bold text-sm flex items-center justify-center gap-2">
+                                            <Clock className="w-4 h-4" />
+                                            {new Date(passData.validUntil).toLocaleString('en-IN')}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
 
                             {passData.vehicle && (
@@ -148,32 +159,37 @@ const Verify = () => {
 
                             <div className="space-y-4 mb-8">
                                 <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Authenticated Travelers ({passData.uids.length})</h3>
-                                {passData.uids.map((uid, index) => (
-                                    <div key={index} className="glass-panel rounded-2xl overflow-hidden border border-emerald-500/20 relative p-4 flex items-center gap-4">
-                                        <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-slate-700 bg-slate-800 shrink-0">
-                                            <img src={avatars[index % avatars.length]} className="w-full h-full object-cover opacity-80 mix-blend-luminosity" alt="Traveler" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="text-white font-bold text-sm mb-0.5">{passData.uids.length === 1 ? 'Primary Traveler' : `Traveler ${index + 1}`}</p>
-                                            <div className="flex items-center gap-2 text-xs mb-1">
-                                                <span className="flex items-center gap-1 text-slate-400">
-                                                    {isIndian ? (
-                                                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/c/cf/Aadhaar_Logo.svg/1200px-Aadhaar_Logo.svg.png" className="h-3 brightness-0 invert opacity-80" alt="Aadhar" />
-                                                    ) : (
-                                                        <Globe className="w-3 h-3 text-blue-400" />
-                                                    )}
-                                                    {identityText}
-                                                </span>
+                                {passData.uids.map((uid, idx) => {
+                                    // Try to find if this UID is a family member name to get the pic
+                                    const familyMember = passData.user?.familyMembers?.find(fm => fm.name === uid);
+
+                                    return (
+                                        <div key={idx} className="glass-panel rounded-2xl overflow-hidden border border-emerald-500/20 relative p-4 flex items-center gap-4">
+                                            <div className="w-14 h-14 rounded-full overflow-hidden bg-slate-800 border-2 border-slate-700 flex items-center justify-center">
+                                                {familyMember?.profilePic ? (
+                                                    <img src={familyMember.profilePic} alt="" className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <Users className="w-6 h-6 text-slate-600" />
+                                                )}
                                             </div>
-                                            <p className="text-emerald-400 font-mono text-xs tracking-widest bg-emerald-500/10 inline-block px-2 py-0.5 rounded border border-emerald-500/20">
-                                                <span className="text-slate-400 text-[9px] uppercase font-sans mr-1">{idLabel}:</span> **** {uid.slice(-4)}
-                                            </p>
+                                            <div className="flex-1">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-white font-bold">{uid}</span>
+                                                    {familyMember && (
+                                                        <span className="text-[10px] text-blue-400 font-bold uppercase tracking-tighter bg-blue-400/10 px-1.5 py-0.5 rounded-md">Verified Profile</span>
+                                                    )}
+                                                </div>
+                                                <div className="flex items-center gap-2 text-[10px] text-slate-500 font-medium mt-1">
+                                                    <Fingerprint className="w-3 h-3" />
+                                                    {familyMember ? `${familyMember.relation} • ${familyMember.age} yrs` : 'Masked Traveller ID'}
+                                                </div>
+                                            </div>
+                                            <div className="shrink-0 bg-emerald-500/20 p-1.5 rounded-full text-emerald-400">
+                                                <ShieldCheck className="w-4 h-4" />
+                                            </div>
                                         </div>
-                                        <div className="shrink-0 bg-emerald-500/20 p-1.5 rounded-full text-emerald-400">
-                                            <ShieldCheck className="w-4 h-4" />
-                                        </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </div>
 
@@ -235,14 +251,19 @@ const Verify = () => {
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Inspector Notes (Optional)</label>
-                                            <textarea
-                                                value={checkpointNotes}
-                                                onChange={(e) => setCheckpointNotes(e.target.value)}
-                                                placeholder="Any baggage checks, anomalies, details..."
-                                                rows="2"
-                                                className="w-full bg-slate-800/80 border border-slate-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors resize-none shadow-inner"
-                                            ></textarea>
+                                            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Pass Validity (Hours)</label>
+                                            <select
+                                                value={validityDuration}
+                                                onChange={(e) => setValidityDuration(e.target.value)}
+                                                className="w-full bg-slate-800/80 border border-slate-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors shadow-inner"
+                                            >
+                                                <option value="4">4 Hours (Temporary)</option>
+                                                <option value="12">12 Hours (Short Visit)</option>
+                                                <option value="24">24 Hours (Standard)</option>
+                                                <option value="48">48 Hours (Weekend)</option>
+                                                <option value="168">7 Days (Week)</option>
+                                                <option value="720">30 Days (Monthly)</option>
+                                            </select>
                                         </div>
                                         <button
                                             onClick={handleAddCheckpoint}
@@ -250,7 +271,7 @@ const Verify = () => {
                                             className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all flex items-center justify-center gap-2"
                                         >
                                             {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-                                            Submit Record
+                                            Authorize & Log Checkpoint
                                         </button>
                                     </div>
                                 </div>
