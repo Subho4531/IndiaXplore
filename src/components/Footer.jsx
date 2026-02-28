@@ -41,7 +41,7 @@ const Footer = () => {
                 </div>
             </div>
             <div className="text-center text-slate-500 text-sm font-medium">
-                All rights reserved @ IndiaXplore.co
+                Made with ❤️ by <a href="https://github.com/subho4531" target="_blank" className="hover:text-orange-accent transition-colors">Jeet</a>
             </div>
         </footer>
     );
