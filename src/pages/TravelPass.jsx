@@ -116,7 +116,7 @@ const TravelPass = () => {
             }
             const userData = JSON.parse(userStr);
 
-            const res = await fetch('http://localhost:5000/api/pass/generate', {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/pass/generate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

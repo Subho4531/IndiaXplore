@@ -35,7 +35,7 @@ const Verify = () => {
 
         const fetchPass = async () => {
             try {
-                const res = await fetch(`http://localhost:5000/api/pass/${idParam}`);
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/pass/${idParam}`);
                 if (!res.ok) throw new Error("Not found");
                 const data = await res.json();
 
@@ -55,7 +55,7 @@ const Verify = () => {
         if (!checkpointLocation.trim()) return alert("Location is required");
         setIsSubmitting(true);
         try {
-            const res = await fetch(`http://localhost:5000/api/pass/${idParam}/verify`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/pass/${idParam}/verify`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
