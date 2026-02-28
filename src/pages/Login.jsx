@@ -6,7 +6,6 @@ const Login = () => {
     const [role, setRole] = useState('traveller');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [aadharNumber, setAadharNumber] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
@@ -18,7 +17,7 @@ const Login = () => {
             const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password, aadharNumber, role })
+                body: JSON.stringify({ email, password, role })
             });
             const data = await res.json();
 
@@ -104,19 +103,6 @@ const Login = () => {
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                         </div>
-                        <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Fingerprint className="h-5 w-5 text-slate-400" />
-                            </div>
-                            <input
-                                type="text"
-                                required
-                                className="w-full pl-10 pr-3 py-3 border border-slate-700 rounded-xl bg-slate-900/50 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                placeholder="Aadhar Number (12 Digits)"
-                                value={aadharNumber}
-                                onChange={(e) => setAadharNumber(e.target.value)}
-                            />
-                        </div>
                     </div>
 
                     <button
@@ -138,8 +124,8 @@ const Login = () => {
                         </Link>
                     </p>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 

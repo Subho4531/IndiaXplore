@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, MapPin, ArrowRightLeft, Search, AlertCircle, Plane, ArrowRight, Lock, CheckCircle } from 'lucide-react';
 
-const apiKey = "AIzaSyBYMyDqUZe_hKSc2KTS80IacTJ5caloadk";
+const defaultApiKey = "AIzaSyAwvznSRpcvqvvM1ayOtVyG4BDwfWEEUm0";
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY || defaultApiKey;
 
 const Flight = () => {
     const [step, setStep] = useState('search'); // 'search', 'loading', 'results', 'checkout', 'processing', 'success'
@@ -21,7 +22,7 @@ const Flight = () => {
     }, []);
 
     const fetchWithRetry = async (payload) => {
-        const modelsToTry = ["gemini-1.5-flash", "gemini-1.5-flash-8b", "gemini-pro"];
+        const modelsToTry = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
         let lastError = null;
 
         for (const model of modelsToTry) {

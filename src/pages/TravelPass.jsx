@@ -278,7 +278,11 @@ const TravelPass = () => {
                                             className={`p-4 rounded-xl border transition-all cursor-pointer flex items-center gap-3 ${selectedMembers.includes(idx) ? 'border-emerald-500/50 bg-emerald-500/10' : 'border-white/5 bg-slate-800/50 hover:border-white/10'}`}
                                         >
                                             <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center overflow-hidden">
-                                                {member.profilePic ? <img src={member.profilePic} className="w-full h-full object-cover" alt="" /> : <UserCircle className="w-6 h-6 text-slate-500" />}
+                                                {member.profilePic ? (
+                                                    <img src={member.profilePic.startsWith('/') ? `${import.meta.env.VITE_API_URL.replace('/api', '')}${member.profilePic}` : member.profilePic} className="w-full h-full object-cover" alt="" />
+                                                ) : (
+                                                    <UserCircle className="w-6 h-6 text-slate-500" />
+                                                )}
                                             </div>
                                             <div className="flex-1">
                                                 <p className="text-sm font-bold text-white leading-tight">{member.name}</p>

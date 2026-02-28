@@ -167,7 +167,7 @@ const Verify = () => {
                                         <div key={idx} className="glass-panel rounded-2xl overflow-hidden border border-emerald-500/20 relative p-4 flex items-center gap-4">
                                             <div className="w-14 h-14 rounded-full overflow-hidden bg-slate-800 border-2 border-slate-700 flex items-center justify-center">
                                                 {familyMember?.profilePic ? (
-                                                    <img src={familyMember.profilePic} alt="" className="w-full h-full object-cover" />
+                                                    <img src={familyMember.profilePic.startsWith('/') ? `${import.meta.env.VITE_API_URL.replace('/api', '')}${familyMember.profilePic}` : familyMember.profilePic} alt="" className="w-full h-full object-cover" />
                                                 ) : (
                                                     <Users className="w-6 h-6 text-slate-600" />
                                                 )}

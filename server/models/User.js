@@ -6,14 +6,13 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     role: { type: String, enum: ['traveller', 'verifier'], required: true },
     mobileNumber: { type: String, required: true },
-    aadharHash: { type: String, required: true },
     isVerified: { type: Boolean, default: false },
+    profilePic: { type: String, default: '' },
     familyMembers: [{
         name: { type: String, required: true },
         age: { type: Number, required: true },
         relation: { type: String, required: true },
-        profilePic: { type: String, default: '' },
-        aadharHash: { type: String, default: '' }
+        profilePic: { type: String, default: '' }
     }]
 }, { timestamps: true });
 

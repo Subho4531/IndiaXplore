@@ -10,6 +10,7 @@ const Profile = () => {
     const [newMember, setNewMember] = useState({ name: '', age: '', relation: '', profilePic: '' });
     const [isAdding, setIsAdding] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [uploading, setUploading] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -65,6 +66,62 @@ const Profile = () => {
         }
     };
 
+    const handleProfilePicUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('profilePic', file);
+
+        setUploading(true);
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/profile/${user._id}/upload`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setUser({ ...user, profilePic: data.profilePic });
+                // Update local storage too if needed
+                const storedUser = JSON.parse(localStorage.getItem('user'));
+                localStorage.setItem('user', JSON.stringify({ ...storedUser, profilePic: data.profilePic }));
+            } else {
+                alert(data.message || "Upload failed");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error uploading image");
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleFamilyPicUpload = async (e, memberId) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('profilePic', file);
+
+        setUploading(true);
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/profile/${user._id}/family/${memberId}/upload`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setFamilyMembers(data.familyMembers);
+            } else {
+                alert(data.message || "Upload failed");
+            }
+        } catch (err) {
+            alert("Error uploading image");
+        } finally {
+            setUploading(false);
+        }
+    };
+
     if (loading) return <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white">Loading...</div>;
 
     return (
@@ -81,10 +138,32 @@ const Profile = () => {
                 </div>
 
                 {/* Main User Info */}
-                <div className="glass-panel rounded-3xl p-8 mb-8 border border-white/10 bg-slate-800/50">
-                    <div className="flex flex-col md:flex-row items-center gap-8">
-                        <div className="w-32 h-32 rounded-full bg-blue-600/20 border-4 border-blue-500/30 flex items-center justify-center">
-                            <User className="w-16 h-16 text-blue-400" />
+                <div className="glass-panel rounded-3xl p-8 mb-8 border border-white/10 bg-slate-800/50 relative overflow-hidden">
+                    <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
+                        <div className="relative group cursor-pointer">
+                            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-500/30 bg-slate-900 flex items-center justify-center transition-all group-hover:border-blue-500">
+                                {user?.profilePic ? (
+                                    <img src={`${import.meta.env.VITE_API_URL.replace('/api', '')}${user.profilePic}`} alt="Profile" className="w-full h-full object-cover" />
+                                ) : (
+                                    <User className="w-16 h-16 text-blue-400" />
+                                )}
+                                {uploading && (
+                                    <div className="absolute inset-0 bg-slate-900/60 flex items-center justify-center">
+                                        <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                                    </div>
+                                )}
+                                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <Camera className="w-8 h-8 text-white" />
+                                </div>
+                            </div>
+                            <input
+                                type="file"
+                                className="hidden"
+                                id="profile-upload"
+                                accept="image/*"
+                                onChange={handleProfilePicUpload}
+                            />
+                            <label htmlFor="profile-upload" className="absolute inset-0 cursor-pointer rounded-full"></label>
                         </div>
                         <div className="text-center md:text-left">
                             <h2 className="text-2xl font-bold mb-1">{user?.name}</h2>
@@ -172,12 +251,25 @@ const Profile = () => {
                     ) : familyMembers.map((member) => (
                         <div key={member._id} className="glass-panel p-5 rounded-3xl border border-white/5 bg-slate-800/30 flex items-center justify-between group">
                             <div className="flex items-center gap-4">
-                                <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-slate-700 bg-slate-800">
-                                    {member.profilePic ? (
-                                        <img src={member.profilePic} alt={member.name} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <User className="w-full h-full p-3 text-slate-600" />
-                                    )}
+                                <div className="relative group/fm">
+                                    <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-slate-700 bg-slate-800 flex items-center justify-center">
+                                        {member.profilePic ? (
+                                            <img src={member.profilePic.startsWith('/') ? `${import.meta.env.VITE_API_URL.replace('/api', '')}${member.profilePic}` : member.profilePic} alt={member.name} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <User className="w-full h-full p-3 text-slate-600" />
+                                        )}
+                                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover/fm:opacity-100 transition-opacity rounded-full">
+                                            <Camera className="w-5 h-5 text-white" />
+                                        </div>
+                                    </div>
+                                    <input
+                                        type="file"
+                                        className="hidden"
+                                        id={`fm-upload-${member._id}`}
+                                        accept="image/*"
+                                        onChange={(e) => handleFamilyPicUpload(e, member._id)}
+                                    />
+                                    <label htmlFor={`fm-upload-${member._id}`} className="absolute inset-0 cursor-pointer rounded-full"></label>
                                 </div>
                                 <div>
                                     <h4 className="font-bold text-white leading-tight">{member.name}</h4>

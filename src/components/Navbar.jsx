@@ -70,8 +70,17 @@ const Navbar = ({ minimal = false }) => {
                 <div className="hidden md:flex items-center space-x-4">
                     {user ? (
                         <>
-                            <Link to="/profile" className="text-sm font-medium text-slate-200 hover:text-white transition-colors cursor-pointer bg-white/5 px-4 py-2 rounded-full border border-white/10">
-                                My Profile
+                            <Link to="/profile" className="flex items-center gap-2 text-sm font-medium text-slate-200 hover:text-white transition-colors cursor-pointer bg-white/5 pl-2 pr-4 py-1.5 rounded-full border border-white/10 group">
+                                <div className="w-8 h-8 rounded-full overflow-hidden border border-white/20 bg-slate-800">
+                                    {user.profilePic ? (
+                                        <img src={`${import.meta.env.VITE_API_URL.replace('/api', '')}${user.profilePic}`} alt="" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center bg-blue-500/20 text-blue-400">
+                                            {user.name.charAt(0)}
+                                        </div>
+                                    )}
+                                </div>
+                                <span>My Profile</span>
                             </Link>
                             <button onClick={handleLogout} className="text-sm font-medium text-red-400 hover:text-red-300 transition-colors cursor-pointer">
                                 Logout
