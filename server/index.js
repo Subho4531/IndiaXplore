@@ -18,13 +18,18 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/pass', passRoutes);
 
+// Health check route
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', message: 'IndiaXplore API is running on Render' });
+});
+
 // Database connection
 mongoose.connect(process.env.MONGODB_URL)
     .then(() => {
         console.log('Connected to MongoDB');
         // Vercel expects an exported app, not a running server
 
-        app.listen(5000, () => console.log(`Server running on port 5000`));
+        app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
     })
     .catch((error) => console.error('MongoDB connection error:', error));

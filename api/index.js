@@ -13,13 +13,33 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Routes
+// Health check routes
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', message: 'IndiaXplore API is running (at /api/health)' });
+});
+
+app.get('/health', (req, res) => {
+    res.json({ status: 'ok', message: 'IndiaXplore API is running (at /health)' });
+});
+
+// Root route for the API function
+app.get('/api', (req, res) => {
+    res.json({ message: 'IndiaXplore API Root' });
+});
+
+// Main Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/pass', passRoutes);
 
-// Health check route
-app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', message: 'IndiaXplore API is running' });
+// Fallback for debugging
+app.use((req, res) => {
+    res.status(404).json({
+        error: 'Not Found',
+        message: `Cannot ${req.method} ${req.path}`,
+        receivedPath: req.path,
+        originalUrl: req.originalUrl,
+        suggestion: 'Try /api/health or /api/auth/login'
+    });
 });
 
 // Database connection
